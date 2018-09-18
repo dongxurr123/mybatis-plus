@@ -50,6 +50,7 @@ public enum SqlMethod {
      */
     UPDATE_BY_ID("updateById", "根据ID 选择修改数据", "<script>\nUPDATE %s %s WHERE %s=#{%s} %s\n</script>"),
     UPDATE("update", "根据 whereEntity 条件，更新记录", "<script>\nUPDATE %s %s %s\n</script>"),
+    BATCH_UPDATE_BY_ID("batchUpdateById", "批量根据ID修改数据", "<script>\nUPDATE %s %s WHERE %s IN #{%s}\n</script>"),
 
     /**
      * 逻辑删除 -> 修改

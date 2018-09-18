@@ -141,6 +141,14 @@ public interface BaseMapper<T> {
     int updateById(@Param(Constants.ENTITY) T entity);
 
     /**
+     * <p>批量根据 ID 修改(CASE WHEN方式实现)</p>
+     *
+     * @param entities 实体对象列表
+     * @return
+     */
+    int batchUpdateById(@Param(Constants.COLLECTION) Collection<T> entities);
+
+    /**
      * <p>
      * 根据 whereEntity 条件，更新记录
      * </p>

@@ -138,6 +138,14 @@ public class MysqlTestDataMapperTest {
     }
 
     @Test
+    public void c4_batchUpdateByIds() {
+        CommonData entity1 = new CommonData().setId(7L).setTestInt(996);
+        Assert.assertEquals(1, commonMapper.batchUpdateById(Arrays.asList(entity1)));
+        entity1.setTestInt(666);
+        Assert.assertEquals(1, commonMapper.batchUpdateById(Arrays.asList(entity1)));
+    }
+
+    @Test
     public void d1_getAllNoTenant() {
         commonMapper.getAllNoTenant();
     }

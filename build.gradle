@@ -42,7 +42,7 @@ ext {
         "commons-dbcp2"                     : "org.apache.commons:commons-dbcp2:2.1.1",
         "sqlserver"                         : "com.microsoft.sqlserver:sqljdbc4:4.0",
         "postgresql"                        : "org.postgresql:postgresql:9.4.1212",
-        "oracle"                            : "com.oracle:ojdbc14:10.2.0.5.0",
+        "oracle"                            : "com.oracle:ojdbc14:10.2.0.4.0",
         "h2"                                : "com.h2database:h2:1.4.194",
         "mysql"                             : "mysql:mysql-connector-java:5.1.38",
         //code generator
@@ -53,10 +53,12 @@ ext {
         "springboot-autoconfigure"          : "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}",
         "springboot-configuration-processor": "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}",
         "springboot-starter-jdbc"           : "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}",
+
     ]
 }
 
 allprojects {
+    apply plugin: 'idea'
     group = 'com.baomidou'
     version = '3.0-RC3'
 }
@@ -65,6 +67,8 @@ description = "Mybatis 增强工具包 - 只做增强不做改变，简化CRUD�
 
 buildscript {
     repositories {
+//        maven { url "http://artifactory.jd.com/libs-snapshots" }
+//        maven { url "http://artifactory.jd.com/plugins-releases" }
         maven { url "https://repo.spring.io/plugins-release" }
     }
     dependencies {
@@ -94,9 +98,11 @@ subprojects {
 
     repositories {
         mavenLocal()
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "http://www.cameliatk.jp/maven2/repository/thirdparty" }
+//        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "http://artifactory.jd.com/libs-snapshots" }
+        maven { url "http://artifactory.jd.com/plugins-releases" }
+//        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+//        maven { url "http://www.cameliatk.jp/maven2/repository/thirdparty" }
         jcenter()
     }
 
