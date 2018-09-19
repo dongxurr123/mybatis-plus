@@ -24,10 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -139,10 +136,31 @@ public class MysqlTestDataMapperTest {
 
     @Test
     public void c4_batchUpdateByIds() {
+        CommonData entity0 = new CommonData().setId(6L).setTestStr("wahaha-6");
         CommonData entity1 = new CommonData().setId(7L).setTestInt(996);
-        Assert.assertEquals(1, commonMapper.batchUpdateById(Arrays.asList(entity1)));
+        CommonData entity2 = new CommonData().setId(19L).setTestEnum(TestEnum.TWO);
+
+        List<CommonData> commonDataListBeforeUpdate = commonMapper.selectBatchIds(Arrays.asList(entity0.getId(), entity1.getId(), entity2.getId()));
+
+        List<CommonData> commonDataListToUpdate = Arrays.asList(entity0, entity1, entity2);
+        Assert.assertEquals(1, commonMapper.batchUpdateById(commonDataListToUpdate));
+
+        List<CommonData> commonDataListAfterUpdate = commonMapper.selectBatchIds(Arrays.asList(entity0.getId(), entity1.getId(), entity2.getId()));
+        for (CommonData beforeUpdate : commonDataListBeforeUpdate) {
+            for (CommonData afterUpdate : commonDataListAfterUpdate) {
+                if (Objects.equals(beforeUpdate.getId(), afterUpdate.getId())) {
+//                    Assert.assertEquals();
+                }
+            }
+        }
+
+
+//        Assert.assertEquals(Integer.valueOf(996), commonData1AfterUpdate.getTestInt());
+
         entity1.setTestInt(666);
         Assert.assertEquals(1, commonMapper.batchUpdateById(Arrays.asList(entity1)));
+        CommonData commonDataAfterRecover = commonMapper.selectById(7L);
+        Assert.assertEquals(Integer.valueOf(996), commonDataAfterRecover.getTestInt());
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import java.util.Collection;
 import java.util.Objects;
 
+import static com.baomidou.mybatisplus.core.toolkit.Constants.COLLECTION;
 import static com.baomidou.mybatisplus.core.toolkit.StringPool.NEWLINE;
 
 /**
@@ -26,7 +27,7 @@ import static com.baomidou.mybatisplus.core.toolkit.StringPool.NEWLINE;
 public class BatchUpdateById extends AbstractMethod {
 
     private final static String BATCH_UPDATE_BY_KEYS_ONE_FIELD =
-            "<foreach collection=\"" + Constants.COLLECTION + "\" item=\"" + Constants.ENTITY + "\" separator=\" \" open=\"CASE %s\" close=\"END\">" + NEWLINE +
+            "<foreach collection=\"" + COLLECTION + "\" item=\"" + Constants.ENTITY + "\" separator=\" \" open=\"CASE %s\" close=\"END\">" + NEWLINE +
                 "WHEN %s THEN " + NEWLINE +
                 "<choose>" + NEWLINE +
                     "<when test=\"%s==null\">" + NEWLINE +
@@ -38,8 +39,13 @@ public class BatchUpdateById extends AbstractMethod {
                 "</choose>" + NEWLINE +
             "</foreach>" + NEWLINE;
 
+    private final static String BATCH_UPDATE_BY_KEYS_AUTO_FILL_FIELD =
+            "<foreach collection=\"" + COLLECTION + "\" item=\"" + Constants.ENTITY + "\" separator=\" \" open=\"CASE %s\" close=\"END\">" + NEWLINE +
+                "WHEN %s THEN %s" + NEWLINE +
+            "</foreach>" + NEWLINE;
+
     private final static String BATCH_UPDATE_WHERE =
-            "<foreach collection=\"" + Constants.COLLECTION + "\" index=\"index\" item=\"item\" separator=\",\" open=\"(\" close=\")\">" + NEWLINE +
+            "<foreach collection=\"" + COLLECTION + "\" index=\"index\" item=\"item\" separator=\",\" open=\"(\" close=\")\">" + NEWLINE +
                 "#{item.%s}" + NEWLINE +
             "</foreach>" + NEWLINE;
 
@@ -65,19 +71,24 @@ public class BatchUpdateById extends AbstractMethod {
             if (idx++ > 0) {
                 sb.append(',');
             }
+            sb.append(String.format("`%s`=]]>", tableFieldInfo.getColumn())).append(NEWLINE);
             if (tableFieldInfo.getFieldFill() == FieldFill.UPDATE || tableFieldInfo.getFieldFill() == FieldFill.INSERT_UPDATE) {
-                //
-                sb.append(String.format("`%s`=%s]]>", tableFieldInfo.getColumn(), SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + tableFieldInfo.getEl()))).append(NEWLINE);
+                sb.append(
+                    String.format(BATCH_UPDATE_BY_KEYS_AUTO_FILL_FIELD,
+                        keyColumn,
+                        SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + keyProperty),
+                        SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + tableFieldInfo.getProperty())
+                    ));
             }
             else {
-                sb.append(String.format("`%s`=]]>", tableFieldInfo.getColumn())).append(NEWLINE);
-                sb.append(String.format(BATCH_UPDATE_BY_KEYS_ONE_FIELD,
-                    keyColumn,
-                    SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + keyProperty),
-                    SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + tableFieldInfo.getProperty()),
-                    tableFieldInfo.getColumn(),
-                    SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + tableFieldInfo.getProperty())
-                ));
+                sb.append(
+                    String.format(BATCH_UPDATE_BY_KEYS_ONE_FIELD,
+                        keyColumn,
+                        SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + keyProperty),
+                        Constants.ENTITY_SPOT + tableFieldInfo.getProperty(),
+                        tableFieldInfo.getColumn(),
+                        SqlScriptUtils.safeParam(Constants.ENTITY_SPOT + tableFieldInfo.getProperty())
+                    ));
             }
         }
         sb.append("<![CDATA[ WHERE ").append(keyColumn).append(" IN ]]>");
